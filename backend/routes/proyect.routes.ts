@@ -13,20 +13,18 @@ import { Router } from 'express';
 
 const router = Router();
 
-
-
 router.post('/add-colaborator/:id', <any>checkAuth, addColaborator);
 router.post('/delete-colaborator/:id', <any>checkAuth, deleteColaborator);
 router.post('/add-task/:id',<any>checkAuth, addTask);
 
 router.route('/')
-    .get(<any>checkAuth, getProyectsByUser)
+    .get(<any>checkAuth, <any>getProyectsByUser)
     .post(<any>checkAuth, <any>createProyect);
 
 router.route('/:id')
-    .get(<any>checkAuth, getProyectById)
-    .put(<any>checkAuth, updateProyect)
-    .delete(<any>checkAuth, deleteProyect);
+    .get(<any>checkAuth, <any>getProyectById)
+    .put(<any>checkAuth, <any>updateProyect)
+    .delete(<any>checkAuth, <any>deleteProyect);
 
 export default router
 

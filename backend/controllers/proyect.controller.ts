@@ -4,10 +4,15 @@ import { Proyect as ProyectInterface } from '../interface/Proyect';
 import { AuthRequest } from '../middlewares/checkAuth';
 import Proyect from '../models/Proyects';
 
-const getProyectsByUser = async (req = request, res = response) =>{
+const getProyectsByUser = async (req :  AuthRequest, res = response) =>{
+    const {_id} = req.user;
 
     try{
-        
+        const proyects = await Proyect.find().where('creator').equals(_id)
+        if(!proyects){
+            return res.status(400).json({message : 'Error getting proyects'})
+        }
+        return res.status(200).json(proyects)
         
     }
     catch(error : unknown){
@@ -15,14 +20,13 @@ const getProyectsByUser = async (req = request, res = response) =>{
             return res.status(500).json({message : error.message})
         }
         else{
-        return res.status(500).json({message : 'Error unknown'})
+        return res.status(500).json({message : error})
         }
     }
 };
 
 const createProyect = async (req : AuthRequest, res = response) =>{
     const {description, name, deadline, client} : ProyectInterface = req.body;
-
 
     try{
         const newProyect = await Proyect.create({
@@ -49,9 +53,18 @@ const createProyect = async (req : AuthRequest, res = response) =>{
     }
 };
 
-const getProyectById = async (req = request, res = response) =>{
+const getProyectById = async (req  : AuthRequest, res = response) =>{
+    const {id} = req.params;
+    const {_id} = req.user;
     try{
-        
+        const proyect = await Proyect.findById(id);
+        if(!proyect){
+            return res.status(404).json({message : 'proyect not found'})
+        }
+        if(proyect.creator.toString () !== _id.toString()){
+            return res.status(401).json({message : 'Unauthorized'})
+        }
+        return res.status(200).json(proyect)
         
     }
     catch(error : unknown){
@@ -64,10 +77,20 @@ const getProyectById = async (req = request, res = response) =>{
     }
 };
 
-const updateProyect = async (req = request, res = response) =>{
+const updateProyect = async (req : AuthRequest, res = response) =>{
+    const {id} = req.params;
+    const {_id} = req.user
     try{
-        
-        
+        const proyect = await Proyect.findById(id);
+        if(!proyect){
+            return res.status(404).json({message : 'proyect not found'})
+        }
+        if(proyect.creator.toString () !== _id.toString()){
+            return res.status(401).json({message : 'Unauthorized'})
+        }
+        const updatedProyect = await Proyect.findByIdAndUpdate(id, req.body, {new : true})
+        await updatedProyect?.save()
+        return res.status(200).json(updatedProyect)
     }
     catch(error : unknown){
         if(error instanceof AxiosError){
@@ -79,9 +102,18 @@ const updateProyect = async (req = request, res = response) =>{
     }
 }
 
-const deleteProyect = async (req = request, res = response) =>{
+const deleteProyect = async (req: AuthRequest, res = response) =>{
+    const {id} = req.params;
     try{
-        
+        const proyect = await Proyect.findById(id);
+        if(!proyect){
+            return res.status(404).json({message : 'proyect not found'})
+        }
+        if(proyect.creator.toString () !== req.user._id.toString()){
+            return res.status(401).json({message : 'Unauthorized'})
+        }
+        await Proyect.findByIdAndDelete(id)
+        return res.status(200).json({message : 'proyect deleted'})
         
     }
     catch(error : unknown){

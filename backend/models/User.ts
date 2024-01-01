@@ -32,18 +32,6 @@ class User {
 
 const UserModel = getModelForClass(User);
 
-//function to encrypt password
-// UserModel.schema.pre('save', async function (next) {
-//     // 'this' here refers to the document being saved
-//     const doc = this as User & { isModified: (field: string) => boolean };
-    
-//     if (doc.isModified('password')) {
-//         const salt = await bcrypt.genSalt(10);
-//         const hash = await bcrypt.hash(doc.password, salt);
-//         doc.password = hash;
-//     }
-//     next();
-// });
 
 // function to compare password
 UserModel.schema.method('matchPassword', async function (enteredPassword: string): Promise<boolean> {
