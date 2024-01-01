@@ -1,7 +1,7 @@
 import { Prop, getModelForClass, Ref } from "@typegoose/typegoose";
 import User from "./User";
 
-class ProyectModel  {
+class Proyect  {
 
     @Prop({
         required : true,
@@ -37,5 +37,5 @@ class ProyectModel  {
 }
 
 
-const Proyect = getModelForClass(ProyectModel);
-export default Proyect
+const ProyectModel = getModelForClass(Proyect);
+export default ProyectModel

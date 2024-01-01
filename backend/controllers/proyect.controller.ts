@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { Proyect as ProyectInterface } from '../interface/Proyect';
 import { AuthRequest } from '../middlewares/checkAuth';
 import Proyect from '../models/Proyects';
+import Task from '../models/Task';
 
 const getProyectsByUser = async (req :  AuthRequest, res = response) =>{
     const {_id} = req.user;
@@ -64,7 +65,11 @@ const getProyectById = async (req  : AuthRequest, res = response) =>{
         if(proyect.creator.toString () !== _id.toString()){
             return res.status(401).json({message : 'Unauthorized'})
         }
-        return res.status(200).json(proyect)
+        const tasks = await Task.find().where('proyect').equals(proyect._id)
+        return res.status(200).json({
+            proyect,
+            tasks
+        })
         
     }
     catch(error : unknown){
@@ -156,20 +161,7 @@ const deleteColaborator = async (req = request, res = response) =>{
     }
 };
 
-const addTask = async (req = request, res = response) =>{
-    try{
-        
-        
-    }
-    catch(error : unknown){
-        if(error instanceof AxiosError){
-            return res.status(500).json({message : error.message})
-        }
-        else{
-        return res.status(500).json({message : 'Error unknown'})
-        }
-    }
-}
+
 export {
     getProyectsByUser,
     createProyect,
@@ -178,5 +170,5 @@ export {
     deleteProyect,
     addColaborator,
     deleteColaborator,
-    addTask
+    
 }
