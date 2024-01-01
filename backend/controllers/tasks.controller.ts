@@ -13,8 +13,7 @@ const createTask = async (req : AuthRequest, res : Response) =>{
         if(!proyectExists){
             return res.status(400).json({message : 'Proyect not found'})
         }
-        console.log(proyectExists.creator)
-        console.log(_id)
+    
         if(proyectExists.creator.toString() !== _id.toString()){
             return res.status(401).json({message : 'You are not the creator of this proyect'})
         }

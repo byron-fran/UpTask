@@ -25,9 +25,8 @@ class Proyect  {
         trim : true
     })
     client! : string
-
-    @Prop({ ref : () => User })
-    creator! : Ref<typeof User>
+    @Prop({ ref: () => User, default: null })
+    creator!: Ref<typeof User>;
 
 
     @Prop({

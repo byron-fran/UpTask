@@ -57,18 +57,22 @@ const createProyect = async (req : AuthRequest, res = response) =>{
 const getProyectById = async (req  : AuthRequest, res = response) =>{
     const {id} = req.params;
     const {_id} = req.user;
+ 
     try{
-        const proyect = await Proyect.findById(id);
+        const proyect = await Proyect.findById(id)?.populate('creator')!;
         if(!proyect){
             return res.status(404).json({message : 'proyect not found'})
         }
         if(proyect.creator.toString () !== _id.toString()){
             return res.status(401).json({message : 'Unauthorized'})
         }
-        const tasks = await Task.find().where('proyect').equals(proyect._id)
+        const tasks = await Task.find().where('proyect').equals(proyect._id);
+
+
         return res.status(200).json({
             proyect,
-            tasks
+            tasks,
+  
         })
         
     }
@@ -77,7 +81,7 @@ const getProyectById = async (req  : AuthRequest, res = response) =>{
             return res.status(500).json({message : error.message})
         }
         else{
-        return res.status(500).json({message : 'Error unknown'})
+        return res.status(500).json({message : error})
         }
     }
 };
