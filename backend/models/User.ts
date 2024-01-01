@@ -1,49 +1,56 @@
-import mongoose from "mongoose"
-import bcrypt from 'bcrypt'
+import { prop, getModelForClass, DocumentType } from '@typegoose/typegoose';
+import bcrypt from 'bcrypt';
 
-
-const UserSchema = new mongoose.Schema({
-    name: {
-        type: String,
+class User {
+    @prop({
         required: true,
         trim: true
+    })
+    name!: string;
 
-    },
-    password: {
-        type: String,
+    @prop({
         required: true,
-        trim: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    token: {
-        type: String,
+        trim: true,
+        unique : true
+    })
+    email!: string;
 
-    },
-    confirm: {
-        type: Boolean,
+    @prop({
+        required: true,
+        minlength: 6,
+    })
+    password!: string;
+
+    @prop({
         default: false
-    }
-},
-    { timestamps: true })
+    })
+    confirm!: boolean;
 
-
-
-//
-UserSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
-        next()
-    }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt)
-})
-
-UserSchema.methods.matchPassword = async function (enteredPassword : string) {
-    return await bcrypt.compare(enteredPassword, this.password)
+    @prop()
+    token!: string;
 }
-const User = mongoose.model('User', UserSchema);
 
-export default User
+const UserModel = getModelForClass(User);
+
+//function to encrypt password
+// UserModel.schema.pre('save', async function (next) {
+//     // 'this' here refers to the document being saved
+//     const doc = this as User & { isModified: (field: string) => boolean };
+    
+//     if (doc.isModified('password')) {
+//         const salt = await bcrypt.genSalt(10);
+//         const hash = await bcrypt.hash(doc.password, salt);
+//         doc.password = hash;
+//     }
+//     next();
+// });
+
+// function to compare password
+UserModel.schema.method('matchPassword', async function (enteredPassword: string): Promise<boolean> {
+    const doc = this as DocumentType<User>;
+    return await bcrypt.compare(enteredPassword, doc.password);
+});
+
+
+export default UserModel;
+

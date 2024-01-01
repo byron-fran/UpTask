@@ -12,6 +12,6 @@ router.get('/confirm/:token',confirmAccount )
 router.post('/reset-password', resetPassword);
 router.get('/verify/:token', verifyToken);
 router.post('/new-password/:token', newPassword);
-router.get('/profile', checkAuth, getProfile)
+router.get('/profile', <any>checkAuth, <any>getProfile)
 
 export default router

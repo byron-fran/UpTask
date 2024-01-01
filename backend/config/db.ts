@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const url = `mongodb+srv://byron123:<password>@cluster0.xlmmosh.mongodb.net/?retryWrites=true&w=majority`;
+
 
 export const db = async () =>{
     try{

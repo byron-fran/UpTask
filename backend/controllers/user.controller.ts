@@ -4,6 +4,7 @@ import User from '../models/User';
 import { generateId } from '../helpers/generateId';
 import bcrypt from 'bcrypt';
 import { generateJWT } from '../jwt/jwt';
+import { AuthRequest } from '../middlewares/checkAuth';
 
 const createUser = async (req = request, res = response) =>{
     const {email} = req.body
@@ -14,6 +15,10 @@ const createUser = async (req = request, res = response) =>{
         }
         const newUser = new User(req.body);
         newUser.token = generateId();
+
+        // Encriptar contraseña
+        const salt = await bcrypt.genSalt(10);
+        newUser.password = await bcrypt.hash(newUser.password, salt);	
         await newUser.save();
 
         if(!newUser){
@@ -27,7 +32,7 @@ const createUser = async (req = request, res = response) =>{
             return res.status(500).json({message : error.message})
         }
         else{
-        return res.status(500).json({message : 'Error unknown'})
+        return res.status(500).json({message : error})
         }
     }
 }
@@ -43,7 +48,7 @@ const loginUser = async (req = request, res = response) => {
         }
             
         const matchPassword = await bcrypt.compare(password, emailFound.password)
-
+      
         if(!matchPassword){
             return res.status(400).json({message : 'Password incorrect'})
         }
@@ -67,8 +72,8 @@ const loginUser = async (req = request, res = response) => {
         }
     }
 }
-const getProfile = async (req = request, res = response) => {
-    const user = req.user
+const getProfile = async (req : Request & AuthRequest    , res = response) => {
+    const user =  req.user
     return res.status(200).json(user)
 }
 const confirmAccount = async (req = request, res = response) => {
