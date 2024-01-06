@@ -4,7 +4,7 @@ import userRouter from './routes/user.routes'
 import proyectRouter from './routes/proyect.routes';
 import tasksRoutes from './routes/task.routes'
 import cors from 'cors'
-
+import dotenv  from 'dotenv'
 
 const app = express()
 app.use(express.json())
@@ -12,7 +12,7 @@ app.use(express.urlencoded({extended : true}));
 
 app.use(cors(
     {
-        origin : 'http://localhost:5173',
+        origin : process.env.FRONTEND_URL!,
         credentials : true
     }
 ))
