@@ -7,11 +7,16 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "css" : "npx tailwindcss -i ./src/index.css -o ./dest/index.css --watch"
   },
   "dependencies": {
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.1",
+    "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
