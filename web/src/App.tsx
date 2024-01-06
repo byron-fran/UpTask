@@ -14,7 +14,7 @@ function App() {
         <Route path='/' element={<AuthLayout/>}>
           <Route index element={<Login/>}/>
           <Route path='/register' element={<Regitser/>}/>
-          <Route path='/new-password' element={<NewPassword/>}/>
+          <Route path='/new-password/:token' element={<NewPassword/>}/>
           <Route path='/reset-password' element={<ResetPassword/>}/>
           <Route path='/confirm-account/:token' element={<ConfirmAcount/>}/>
           <Route path='*' element={<Login/>}/>

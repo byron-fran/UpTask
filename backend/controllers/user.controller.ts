@@ -5,7 +5,7 @@ import { generateId } from '../helpers/generateId';
 import bcrypt from 'bcrypt';
 import { generateJWT } from '../jwt/jwt';
 import { AuthRequest } from '../middlewares/checkAuth';
-import { emailRegister } from '../helpers/email';
+import { emailRegister, resetPasswordEmail } from '../helpers/email';
 
 
 const createUser = async (req = request, res = response) => {
@@ -116,6 +116,7 @@ const resetPassword = async (req = request, res = response) => {
         }
         user.token = generateId();
         await user.save();
+        await resetPasswordEmail(user.name, user.email, user.token);
         return res.status(200).json({ message: 'We send you an email to reset your password' })
 
     }
@@ -157,6 +158,10 @@ const newPassword = async (req = request, res = response) => {
         }
         user.password = password
         user.token = '';
+
+        // hash password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
         await user.save();
         return res.status(200).json({ message: 'Password updated' })
 

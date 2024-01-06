@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { useParams, Link, } from "react-router-dom"
 import Alert, { AlertProps } from "../components/Alert"
-import axios, { AxiosError } from "axios";
-
+import  { AxiosError } from "axios";
+import axiosInstance from "../axios/axios";
 const ConfirmAcount = () => {
   const [alert, setAlert] = useState<AlertProps>({
     message: '',
@@ -16,7 +16,7 @@ const ConfirmAcount = () => {
 
 
         try {
-          const { data } = await axios(`http://localhost:4000/api/users/confirm/${token}`);
+          const { data } = await axiosInstance(`/users/confirm/${token}`);
           setAlert({
             message: data.message,
             error: false
@@ -31,14 +31,13 @@ const ConfirmAcount = () => {
             })
             return
           }
-
-        
-      
       }
 
     }
     confirmAccount()
-  }, [])
+  }, []);
+
+
   return (
     <>
       <h1 className='text-sky-600 text-2xl md:text-4xl  font-bold  capitalize'>

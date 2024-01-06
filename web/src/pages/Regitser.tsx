@@ -2,7 +2,8 @@ import {useState} from 'react'
 import { Link } from 'react-router-dom'
 import Alert from '../components/Alert'
 import { AlertProps } from '../components/Alert'
-import axios, { AxiosError } from 'axios'
+import  { AxiosError } from 'axios'
+import axiosInstance from '../axios/axios'
 
 const Regitser = () => {
   const [name, setName] = useState<string>('')
@@ -42,7 +43,7 @@ const Regitser = () => {
       error: false
     });
     try {
-      const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users/create`, {name, email, password});
+      const {data} = await axiosInstance.post(`/users/create`, {name, email, password});
       setAlert({
         message: data.message,
         error: false
