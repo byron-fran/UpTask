@@ -24,7 +24,9 @@ const createUser = async (req = request, res = response) =>{
         if(!newUser){
             return res.status(400).json({message : 'Error creating user'})
         }
-        return res.status(200).json(newUser)
+        return res.status(200).json({
+            message : "User created, check your email to confirm your account",
+        })
         
     }
     catch(error : unknown){

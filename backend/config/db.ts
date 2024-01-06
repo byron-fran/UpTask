@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
-
+import dotenv from 'dotenv'
+dotenv.config()
 
 export const db = async () =>{
     try{
-        const conexion = await mongoose.connect('mongodb+srv://byron123:byron123@cluster0.xlmmosh.mongodb.net/uptask?retryWrites=true&w=majority', {
+        const conexion = await mongoose.connect(process.env.MONGO_URI!, {
        
         })
         const url = `${conexion.connection.host}: ${conexion.connection.port}`;
