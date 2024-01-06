@@ -5,21 +5,24 @@ import NewPassword from "./pages/NewPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ConfirmAcount from "./pages/ConfirmAcount";
 import AuthLayout from "./layout/AuthLayout";
-
+import { AuthProvider } from './context/AuthContext';
 function App() {
 
   return (
     <>
-      <Routes>
-        <Route path='/' element={<AuthLayout/>}>
-          <Route index element={<Login/>}/>
-          <Route path='/register' element={<Regitser/>}/>
-          <Route path='/new-password/:token' element={<NewPassword/>}/>
-          <Route path='/reset-password' element={<ResetPassword/>}/>
-          <Route path='/confirm-account/:token' element={<ConfirmAcount/>}/>
-          <Route path='*' element={<Login/>}/>
-        </Route>
-      </Routes>
+    <AuthProvider>
+        <Routes>
+          <Route path='/' element={<AuthLayout />}>
+            <Route index element={<Login />} />
+            <Route path='/register' element={<Regitser />} />
+            <Route path='/new-password/:token' element={<NewPassword />} />
+            <Route path='/reset-password' element={<ResetPassword />} />
+            <Route path='/confirm-account/:token' element={<ConfirmAcount />} />
+            <Route path='*' element={<Login />} />
+          </Route>
+        </Routes>
+    </AuthProvider>
+
 
     </>
   )
