@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Alert from '../components/Alert';
 import axiosInstance from '../axios/axios';
 import { AxiosError } from 'axios';
-
+import useAuth from '../hooks/useAuth';
 const Login = () => {
   const [alert, setAlert] = useState({
     message: '',
@@ -11,8 +11,9 @@ const Login = () => {
   })
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const handleSubmit = async  (e: FormEvent<HTMLFormElement>) => {
+  const {isLoading} = useAuth();
+  console.log(isLoading)
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if ([email, password].includes('')) {
       setAlert({
@@ -22,19 +23,23 @@ const Login = () => {
       return
     }
     try {
-      const {data} = await axiosInstance.post('/users/login', {email, password});
-      return data
+      const { data } = await axiosInstance.post('/users/login', { email, password });
+
       setAlert({
         message: '',
         error: false
       })
-    } catch (error : unknown) {
-        if(error instanceof AxiosError){
-          setAlert({
-            message: error.response?.data.message,
-            error: true
-          })
-        }
+      localStorage.setItem('token', data.token);
+      console.log(data)
+      return data
+
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        setAlert({
+          message: error.response?.data.message,
+          error: true
+        })
+      }
     }
   }
   return (

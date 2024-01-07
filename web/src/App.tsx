@@ -6,6 +6,10 @@ import ResetPassword from "./pages/ResetPassword";
 import ConfirmAcount from "./pages/ConfirmAcount";
 import AuthLayout from "./layout/AuthLayout";
 import { AuthProvider } from './context/AuthContext';
+import Proyects from './pages/Proyects';
+import AuthRoutes from './private/AuthRoutes';
+import NewProyect from './pages/NewProyect';
+
 function App() {
 
   return (
@@ -19,6 +23,11 @@ function App() {
             <Route path='/reset-password' element={<ResetPassword />} />
             <Route path='/confirm-account/:token' element={<ConfirmAcount />} />
             <Route path='*' element={<Login />} />
+          </Route>
+          {/* auth routes */}
+          <Route path='/proyects' element={<AuthRoutes />}>
+            <Route index element={<Proyects />} />
+            <Route path='new-proyect' element={<NewProyect />} />
           </Route>
         </Routes>
     </AuthProvider>
