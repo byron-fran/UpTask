@@ -9,12 +9,14 @@ import { AuthProvider } from './context/AuthContext';
 import Proyects from './pages/Proyects';
 import AuthRoutes from './private/AuthRoutes';
 import NewProyect from './pages/NewProyect';
+import ProyectsProvider from './context/ProyectsProvider';
 
 function App() {
 
   return (
     <>
     <AuthProvider>
+      <ProyectsProvider>
         <Routes>
           <Route path='/' element={<AuthLayout />}>
             <Route index element={<Login />} />
@@ -30,6 +32,7 @@ function App() {
             <Route path='new-proyect' element={<NewProyect />} />
           </Route>
         </Routes>
+      </ProyectsProvider>
     </AuthProvider>
 
 
