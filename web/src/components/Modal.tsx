@@ -1,19 +1,28 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState, } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import useProyect from '../hooks/useProyect'
 import { useParams } from 'react-router-dom'
 import Alert from './Alert'
 
 const Modal = () => {
-    const { formModal, handleModalForm, setAlert, alert, submitTask } = useProyect();
-    const [name, setName] = useState<string>('');
-    const [description, setDescription] = useState<string>('');
-    const [priority, setPriority] = useState<string>('');
-    const [deadline, setDeadline] = useState<string>('');
+    const { formModal, handleModalForm, setAlert, alert, submitTask, task, setTask, proyectDetail, updateTaskById } = useProyect();
+    const [taskId, setTaskId] = useState<string>()
     const priorities: string[] = ['Low', 'Medium', 'High'];
     const { id } = useParams();
 
 
+    useEffect(() => {
+        if (task?._id) {
+            setTaskId(task._id);
+            return
+        }
+
+        setTaskId('');
+
+
+    }, [task._id])
+    //destructuring task
+    const { description, name, priority, deadline } = task
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if ([name, description, deadline, priority].includes('')) {
@@ -30,13 +39,23 @@ const Modal = () => {
             return
         }
         // submit task
+        const taskFound = proyectDetail?.tasks?.find((task) => task?._id === taskId);
+        if (taskFound) {
+            await updateTaskById(task)
+            return
+        }
+
         await submitTask({ name, description, priority, deadline, proyect: id! })
 
         // reset form
-        setDescription('')
-        setName('')
-        setPriority('')
-        setDeadline('')
+        setTask({
+            _id: '',
+            name: '',
+            description: '',
+            priority: '',
+            deadline: '',
+            proyect: '',
+        })
     }
 
     return (
@@ -104,7 +123,7 @@ const Modal = () => {
                                                 className='border w-full p-2 mt-2 placeholder-gray-400 rounded-md'
                                                 value={name}
                                                 placeholder='Name of the task'
-                                                onChange={(e) => setName(e.target.value)}
+                                                onChange={(e) => setTask({ ...task, name: e.target.value })}
 
                                             />
                                         </div>
@@ -115,7 +134,7 @@ const Modal = () => {
                                                 className='border w-full p-2 mt-2 placeholder-gray-400 rounded-md'
                                                 value={deadline}
 
-                                                onChange={(e) => setDeadline(e.target.value)}
+                                                onChange={(e) => setTask({ ...task, deadline: e.target.value })}
 
                                             />
                                         </div>
@@ -126,7 +145,7 @@ const Modal = () => {
                                                 className='border w-full p-2 mt-2 placeholder-gray-400 rounded-md'
                                                 value={description}
                                                 placeholder='Description of the task'
-                                                onChange={(e) => setDescription(e.target.value)}
+                                                onChange={(e) => setTask({ ...task, description: e.target.value })}
                                             />
                                         </div>
                                         <div className='mb-5'>
@@ -135,7 +154,7 @@ const Modal = () => {
                                                 id='priority'
                                                 className='border w-full p-2 mt-2 placeholder-gray-400 rounded-md'
                                                 value={priority}
-                                                onChange={(e) => setPriority(e.target.value)}
+                                                onChange={(e) => setTask({ ...task, priority: e.target.value })}
                                             >
                                                 <option>--select priority--</option>
                                                 {priorities.map((priority, i) => (
@@ -145,7 +164,7 @@ const Modal = () => {
                                         </div>
                                         <input
                                             type='submit'
-                                            value='create task'
+                                            value={`${taskId ? 'update' : 'create'}`}
                                             className='bg-sky-600 w-full p-3 text-white uppercase font-bold rounded-md hover:bg-sky-700 cursor-pointer'
                                         />
                                     </form>

@@ -26,7 +26,12 @@ type ProyectsContextType = {
     setFormModal : Dispatch<SetStateAction<boolean>>,
     handleModalForm : () => void,
     // states tasks
+    task : Task,
+    setTask : Dispatch<SetStateAction<Task>>,
     submitTask : (task : Task) => Promise<void>
+    updateTask : (task : Task) => Promise<void>,
+    updateTaskById : (task : Task) => Promise<void>,
+    deletTaskById : (id : string) => Promise<void>,
 }
 
 const ProyectsDefaultValue: ProyectsContextType = {
@@ -64,7 +69,19 @@ const ProyectsDefaultValue: ProyectsContextType = {
     setFormModal : () => {},
     handleModalForm: () => {},
     // states default values tasks
-    submitTask : async () => {}
+    task : {
+        _id: '',
+        name: '',
+        description: '',
+        priority: '',
+        deadline: '',
+        proyect: '',
+    },
+    setTask : () => {},
+    submitTask : async () => {},
+    updateTask : async () => {},
+    updateTaskById : async () => {},
+    deletTaskById : async () => {},
 }
 
 export const ProyectContext = createContext<ProyectsContextType>(ProyectsDefaultValue);
@@ -82,6 +99,8 @@ const ProyectsProvider: FC<ProyectsProviderProps> = ({ children }) => {
     const [proyectDetail, setProyectDetail] = useState<Proyect>(ProyectsDefaultValue.proyectDetail);
     const [isLoading, setIsLoading] = useState<boolean>(ProyectsDefaultValue.isLoading);
     const [formModal, setFormModal] = useState<boolean>(ProyectsDefaultValue.formModal);
+    //states tasks
+    const [task, setTask] = useState<Task>(ProyectsDefaultValue.task);
 
     const navigate = useNavigate();
 
@@ -254,7 +273,15 @@ const ProyectsProvider: FC<ProyectsProviderProps> = ({ children }) => {
     };
 
     const handleModalForm = () => {
-        setFormModal(!formModal)
+        setFormModal(!formModal);
+        setTask({
+            _id: '',
+            name: '',
+            description: '',
+            priority: '',
+            deadline: '',
+            proyect: '',
+        })
     };
 
     //tasks functions
@@ -274,6 +301,64 @@ const ProyectsProvider: FC<ProyectsProviderProps> = ({ children }) => {
             setProyectDetail({
                 ...proyectDetail,
                 tasks: [...proyectDetail.tasks!, data]
+            });
+            setFormModal(false)
+        } catch (error : unknown) {
+            if(error instanceof AxiosError) {
+              console.log(error.response?.data)
+            }
+            
+        }
+    };
+    const  updateTask = async (task : Task) => {
+        setTask({
+            ...task,
+            deadline : task?.deadline?.split('T')[0]
+        })
+        setFormModal(true)
+    
+    };
+    const updateTaskById = async (task : Task) => {
+        const token = localStorage.getItem('token');
+        if(!token){
+            return
+        }
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        }
+        try {
+            const {data} = await axiosInstance.put(`/tasks/${task._id}`, task, config);
+            setProyectDetail({
+                ...proyectDetail,
+                tasks: proyectDetail?.tasks?.map(task => task._id === data._id ? data : task)
+            })
+            setFormModal(false)
+        } catch (error : unknown) {
+            if(error instanceof AxiosError) {
+              console.log(error.response?.data)
+            }
+            
+        }
+    };
+    const deletTaskById =  async (id : string) => {
+        const token = localStorage.getItem('token');
+        if(!token){
+            return
+        }
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        }
+        try {
+            await axiosInstance.delete(`/tasks/${id}`, config);
+            setProyectDetail({
+                ...proyectDetail,
+                tasks: proyectDetail?.tasks?.filter(task => task._id !== id)
             });
             setFormModal(false)
         } catch (error : unknown) {
@@ -302,7 +387,13 @@ const ProyectsProvider: FC<ProyectsProviderProps> = ({ children }) => {
             formModal,
             handleModalForm,
             setFormModal,
-            submitTask
+            submitTask,
+            updateTask,
+            task,
+            setTask,
+            updateTaskById,
+            deletTaskById
+
 
 
         }}>
