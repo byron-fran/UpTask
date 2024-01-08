@@ -4,6 +4,8 @@ import { Alert } from '../interfaces/Alert';
 import axiosInstance from '../axios/axios';
 import { AxiosError } from 'axios';
 import {useNavigate,} from  'react-router-dom';
+import { Task } from '../interfaces/Task';
+
 
 type ProyectsContextType = {
     proyect: Proyect,
@@ -19,7 +21,12 @@ type ProyectsContextType = {
     getProyectById: (id: string) => Promise<void>,
     isLoading: boolean,
     setIsLoading: Dispatch<SetStateAction<boolean>>
-    deleteProyectById: (id: string) => Promise<void>
+    deleteProyectById: (id: string) => Promise<void>,
+    formModal : boolean,
+    setFormModal : Dispatch<SetStateAction<boolean>>,
+    handleModalForm : () => void,
+    // states tasks
+    submitTask : (task : Task) => Promise<void>
 }
 
 const ProyectsDefaultValue: ProyectsContextType = {
@@ -52,7 +59,12 @@ const ProyectsDefaultValue: ProyectsContextType = {
     getProyectById: async () => {},
     isLoading: false,
     setIsLoading: () => {},
-    deleteProyectById: async () => {}
+    deleteProyectById: async () => {},
+    formModal : false,
+    setFormModal : () => {},
+    handleModalForm: () => {},
+    // states default values tasks
+    submitTask : async () => {}
 }
 
 export const ProyectContext = createContext<ProyectsContextType>(ProyectsDefaultValue);
@@ -68,7 +80,9 @@ const ProyectsProvider: FC<ProyectsProviderProps> = ({ children }) => {
     const [proyect, setProyect] = useState<Proyect>(ProyectsDefaultValue.proyect);
     const [alert, setAlert] = useState<Alert>(ProyectsDefaultValue.alert);
     const [proyectDetail, setProyectDetail] = useState<Proyect>(ProyectsDefaultValue.proyectDetail);
-    const [isLoading, setIsLoading] = useState<boolean>(ProyectsDefaultValue.isLoading)
+    const [isLoading, setIsLoading] = useState<boolean>(ProyectsDefaultValue.isLoading);
+    const [formModal, setFormModal] = useState<boolean>(ProyectsDefaultValue.formModal);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -237,6 +251,37 @@ const ProyectsProvider: FC<ProyectsProviderProps> = ({ children }) => {
             }
             
         }
+    };
+
+    const handleModalForm = () => {
+        setFormModal(!formModal)
+    };
+
+    //tasks functions
+    const submitTask  = async ( task :Task) => {
+        const token = localStorage.getItem('token');
+        if(!token){
+            return
+        }
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        }
+        try {
+            const {data} = await axiosInstance.post('/tasks', task, config);
+            setProyectDetail({
+                ...proyectDetail,
+                tasks: [...proyectDetail.tasks!, data]
+            });
+            setFormModal(false)
+        } catch (error : unknown) {
+            if(error instanceof AxiosError) {
+              console.log(error.response?.data)
+            }
+            
+        }
     }
     return (
         <ProyectContext.Provider value={{
@@ -253,7 +298,11 @@ const ProyectsProvider: FC<ProyectsProviderProps> = ({ children }) => {
             getProyectById,
             isLoading,
             setIsLoading,
-            deleteProyectById
+            deleteProyectById,
+            formModal,
+            handleModalForm,
+            setFormModal,
+            submitTask
 
 
         }}>

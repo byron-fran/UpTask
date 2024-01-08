@@ -1,4 +1,5 @@
 import { User } from "./User";
+import { Task } from "./Task";
 export interface Proyect {
     _id : string,
     name : string,
@@ -6,5 +7,6 @@ export interface Proyect {
     deadline? : string ,
     client : string,
     creator? : string,
-    colaborators? : User[]
+    colaborators? : User[],
+    tasks? : Task[]
 }

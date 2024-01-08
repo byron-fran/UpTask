@@ -25,6 +25,12 @@ class Proyect  {
         trim : true
     })
     client! : string
+
+    @Prop({
+        ref :() => Proyect
+    })
+    public tasks! : Ref< Proyect>[]
+
     @Prop({ ref: () => User, default: null })
     creator!: Ref<typeof User>;
 

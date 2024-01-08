@@ -11,6 +11,7 @@
     "css": "npx tailwindcss -i ./src/index.css -o ./dest/index.css --watch"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.18",
     "autoprefixer": "^10.4.16",
     "axios": "^1.6.5",
     "postcss": "^8.4.32",

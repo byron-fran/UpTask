@@ -27,7 +27,7 @@ class Task {
 
     @Prop({
         
-        enum : ['low', 'medium', 'high']
+        enum : ['Low', 'Medium', 'High']
     })
     priority! : string
 

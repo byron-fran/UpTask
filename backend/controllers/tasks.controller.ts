@@ -22,7 +22,9 @@ const createTask = async (req : AuthRequest, res : Response) =>{
         if(!newTask){
             return res.status(400).json({message : 'Error creating task'})
         }
-        await newTask.save()
+        await newTask.save();
+        await Proyect.findByIdAndUpdate(proyect, {$push : {tasks : newTask._id}});
+        
         return res.status(200).json(newTask)
         
     }

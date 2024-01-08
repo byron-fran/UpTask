@@ -1,5 +1,6 @@
 import { Proyect } from "../interfaces/Proyect"
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
+
 interface PryectProps {
     proyect: Proyect
 }
