@@ -1,8 +1,12 @@
 import React from 'react'
+import FormProyect from '../components/FormProyect';
+
 
 const NewProyect = () => {
   return (
-    <div>NewProyect</div>
+    <div className='flex justify-center items-center '>
+        <FormProyect/>
+    </div>
   )
 }
 

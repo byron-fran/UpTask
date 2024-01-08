@@ -3,8 +3,8 @@ export interface Proyect {
     _id : string,
     name : string,
     description : string,
-    deadline? : Date,
+    deadline? : string ,
     client : string,
-    creator : string,
+    creator? : string,
     colaborators? : User[]
 }

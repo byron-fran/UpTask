@@ -14,7 +14,7 @@ const AuthRoutes = () => {
             <Header/>
             <div className='md:flex md:min-h-screen bg-gray-100'>
                 <Sidebar/>
-                <main className='flex-1 bg-sky-50'>
+                <main className='flex-1 bg-gray-50'>
                     <Outlet/>
                 </main>
             </div>

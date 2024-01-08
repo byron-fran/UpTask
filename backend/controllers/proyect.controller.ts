@@ -57,9 +57,9 @@ const createProyect = async (req : AuthRequest, res = response) =>{
 const getProyectById = async (req  : AuthRequest, res = response) =>{
     const {id} = req.params;
     const {_id} = req.user;
- 
+  
     try{
-        const proyect = await Proyect.findById(id)?.populate('creator')!;
+        const proyect = await Proyect.findById(id)
         if(!proyect){
             return res.status(404).json({message : 'proyect not found'})
         }
@@ -69,11 +69,7 @@ const getProyectById = async (req  : AuthRequest, res = response) =>{
         const tasks = await Task.find().where('proyect').equals(proyect._id);
 
 
-        return res.status(200).json({
-            proyect,
-            tasks,
-  
-        })
+        return res.status(200).json(proyect)
         
     }
     catch(error : unknown){

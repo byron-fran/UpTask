@@ -11,7 +11,7 @@ const Header = () => {
                 className='border-b rounded-md w-96 bg-sky-50 p-2 focus:outline-sky-600' 
             />
             <div className='flex items-center md:gap-4'>
-                <h2 className='font-bold'>Proyects</h2>
+                <Link  to='/proyects' className='font-bold'>Proyects</Link>
                 <Link 
                 className='bg-sky-600 text-white py-2 px-4 rounded-lg'
                 to=''>Log out</Link>

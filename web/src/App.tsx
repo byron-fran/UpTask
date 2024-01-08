@@ -10,6 +10,8 @@ import Proyects from './pages/Proyects';
 import AuthRoutes from './private/AuthRoutes';
 import NewProyect from './pages/NewProyect';
 import ProyectsProvider from './context/ProyectsProvider';
+import ProyectCard from './components/ProyectCard';
+import UpdateProyect from './pages/UpdateProyect';
 
 function App() {
 
@@ -30,6 +32,9 @@ function App() {
           <Route path='/proyects' element={<AuthRoutes />}>
             <Route index element={<Proyects />} />
             <Route path='new-proyect' element={<NewProyect />} />
+            <Route path=':id' element={<ProyectCard />} />
+            <Route path='update-proyect/:id' element={<UpdateProyect />} />
+            <Route path='update-proyect/*' element={<Proyects />} />
           </Route>
         </Routes>
       </ProyectsProvider>
