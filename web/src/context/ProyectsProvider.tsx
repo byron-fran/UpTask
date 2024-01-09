@@ -38,6 +38,8 @@ type ProyectsContextType = {
     colaborator: User,
     setColaborator: Dispatch<SetStateAction<User>>,
     addColaborator: (email: string) => Promise<void>,
+    deleteColaborator: (email: string) => Promise<void>,
+    changeStatusById : (id : string) => Promise<void>
 }
 
 const ProyectsDefaultValue: ProyectsContextType = {
@@ -98,6 +100,8 @@ const ProyectsDefaultValue: ProyectsContextType = {
     },
     setColaborator: () => { },
     addColaborator: async () => { },
+    deleteColaborator: async () => { },
+    changeStatusById : async () => {}
 }
 
 export const ProyectContext = createContext<ProyectsContextType>(ProyectsDefaultValue);
@@ -447,11 +451,75 @@ const ProyectsProvider: FC<ProyectsProviderProps> = ({ children }) => {
                     message: error.response?.data.message,
                     error: true
                 });
-                
                 return
             }
         }   
 
+    };
+    const deleteColaborator = async  (email : string) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            return
+        }
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        };
+        try {
+            const {data} = await axiosInstance.post(`/proyects/delete-colaborator/${proyectDetail?._id}`, { email }, config);
+           
+            setAlert({
+                message: data.message,
+                error: false
+            });
+            //update proyect
+            setProyectDetail({
+                ...proyectDetail,
+                colaborators: proyectDetail?.colaborators?.filter(colaborator => colaborator.email !== email)
+            })
+        } catch (error: unknown) {
+            if(error instanceof AxiosError){
+                setAlert({
+                    message: error.response?.data.message,
+                    error: true
+                });
+                return
+            }
+            
+        }
+       
+    };
+    const changeStatusById = async (id : string) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            return
+        }
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        };
+        try {
+            const {data} = await axiosInstance.post(`/tasks/change-status/${id}`, {}, config);
+            // update proyect
+            setProyectDetail({
+                ...proyectDetail,
+                tasks: proyectDetail?.tasks?.map(task => task._id === id ? data : task)
+            })
+
+        } catch (error: unknown) {
+            if(error instanceof AxiosError){
+                setAlert({
+                    message: error.response?.data.message,
+                    error: true
+                });
+                return
+            }
+            
+        }
     }
     return (
         <ProyectContext.Provider value={{
@@ -481,7 +549,9 @@ const ProyectsProvider: FC<ProyectsProviderProps> = ({ children }) => {
             searchColaborator,
             colaborator,
             setColaborator,
-            addColaborator
+            addColaborator,
+            deleteColaborator,
+            changeStatusById
 
 
 

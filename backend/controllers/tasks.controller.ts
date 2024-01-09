@@ -80,7 +80,13 @@ const deleteTask = async (req : AuthRequest, res : Response) =>{
             return res.status(403).json({message : 'You are not the creator of this proyect'})
         }
 
-        await Task.findByIdAndDelete(id)
+        //make promise allSettled
+        await Promise.allSettled(
+            [   await Proyect.findByIdAndUpdate(proyect, {$pull : {tasks : task._id}}),
+                await Task.findByIdAndDelete(id)
+            ]
+            )
+
         return res.status(200).json({message : 'Task deleted'})
     }
     catch(error : unknown){
@@ -122,10 +128,24 @@ const updateTask = async (req : AuthRequest, res : Response) =>{
 
 
 const changeStatus = async (req : AuthRequest, res : Response) =>{
-
+    const {id} = req.params;
+    const {_id} = req.user
     try{
         
-        
+        const task = await Task.findById(id);
+
+        if(!task){
+            return res.status(404).json({message : 'Task not found'})
+        };
+
+        const proyect = await Proyect.findById(task?.proyect);
+        if(proyect?.creator.toString() !== _id.toString()){
+            return res.status(403).json({message : 'You are not the creator of this proyect'})
+        }
+
+        task.status = !task.status;
+        await task.save();
+        return res.status(200).json(task)
     }
     catch(error : unknown){
         if(error instanceof AxiosError){

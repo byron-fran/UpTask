@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import Alert from './Alert';
 import useProyect from '../hooks/useProyect';
 import { useParams } from 'react-router-dom';
 
 const FormColaborator = () => {
     const [email, setEmail] = useState<string>('');
-    const { alert, setAlert, searchColaborator, colaborator, isLoading,addColaborator, getProyectById } = useProyect();
-    const {id} = useParams();
+    const { alert, setAlert, searchColaborator, colaborator, isLoading, addColaborator, getProyectById } = useProyect();
+    const { id } = useParams();
 
     useEffect(() => {
-       if(id){
-        getProyectById(id)
-        return
-       }
+        if (id) {
+            getProyectById(id)
+            return
+        }
     }, [id]);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if ([email].includes('')) {
             setAlert({
@@ -27,7 +27,7 @@ const FormColaborator = () => {
         await searchColaborator(email);
     };
     const handleAddColaborator = async (email: string) => {
-       await addColaborator(email)
+        await addColaborator(email)
         setEmail('');
     };
 
@@ -54,12 +54,12 @@ const FormColaborator = () => {
                 {
                     isLoading ? <h1 className='text-center '>Loading...</h1> : (
                         colaborator?.name &&
-                   (     <div className='flex justify-between'>
+                        (<div className='flex justify-between'>
                             <p className='font-bold '>{colaborator?.name}</p>
                             <button className=' bg-sky-600 hover:bg-sky-800 text-white p-2 rounded-md'
                                 onClick={() => handleAddColaborator(colaborator?.email)}>Add colaborator</button>
                         </div>
-                    ))
+                        ))
                 }
             </div>
         </>

@@ -29,7 +29,7 @@ class Proyect  {
     @Prop({
         ref :() => Proyect
     })
-    public tasks! : Ref< Proyect>[]
+   tasks! : Ref< typeof Proyect>[]
 
     @Prop({ ref: () => User, default: null })
     creator!: Ref<typeof User>;

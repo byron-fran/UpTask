@@ -10,7 +10,12 @@ const getProyectsByUser = async (req: AuthRequest, res = response) => {
     const { _id } = req.user;
 
     try {
-        const proyects = await Proyect.find().where('creator').equals(_id)
+        const proyects = await Proyect.find({
+            $or :[
+                {creator : _id},
+                {colaborators : _id}
+            ]
+        })
         if (!proyects) {
             return res.status(400).json({ message: 'Error getting proyects' })
         }
@@ -60,18 +65,20 @@ const getProyectById = async (req: AuthRequest, res = response) => {
     const { _id } = req.user;
 
     try {
-        const proyect = await Proyect.findById(id).populate('tasks', '-__v', Task, { proyect: id })
+        const proyect = await Proyect.findById(id)
+            .populate('tasks', '-__v', Task, { proyect: id })
+            .populate('colaborators', '-__v -password -token -confirm', User);
 
 
         if (!proyect) {
             return res.status(404).json({ message: 'proyect not found' })
         }
-        if (proyect.creator.toString() !== _id.toString()) {
+        
+        // Check if user is creator or collaborator
+        if (proyect.creator.toString() !== _id.toString() && 
+        !proyect.colaborators.some((colaborator: any) => colaborator._id.toString() === _id.toString())) {
             return res.status(401).json({ message: 'Unauthorized' })
         }
-        const tasks = await Task.find().where('proyect').equals(proyect._id);
-
-
         return res.status(200).json(proyect)
 
     }
@@ -197,10 +204,31 @@ const addColaborator = async (req : AuthRequest, res = response) => {
     }
 };
 
-const deleteColaborator = async (req = request, res = response) => {
+const deleteColaborator = async (req : AuthRequest, res = response) => {
+    const { id } = req.params;
+    const { email  } = req.body;
     try {
 
+        const proyectFound = await Proyect.findById(id);
+        if (!proyectFound) {
+            return res.status(404).json({ message: 'proyect not found' })
+        };
+        if(proyectFound.creator.toString() !== req.user._id.toString()){
+            return res.status(403).json({message : 'You are not the creator of this proyect'})
+        };
 
+        const colaboratorExists = await User.findOne({ email }).select('-password -token -confirm -__v');
+
+        // delete colaborator from the proyect
+        const colaboratorIndex = proyectFound.colaborators?.findIndex(colaborator => colaborator._id.toString() === colaboratorExists?._id.toString());
+        if (colaboratorIndex !== -1) {
+            proyectFound.colaborators?.splice(colaboratorIndex, 1);
+            await proyectFound.save();
+            return res.status(200).json({ message: 'Colaborator deleted from the proyect' });
+        } else {
+            return res.status(400).json({ message: 'Colaborator not found in the proyect' });
+        }
+   
     }
     catch (error: unknown) {
         if (error instanceof AxiosError) {
