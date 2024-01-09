@@ -4,6 +4,7 @@ import { Proyect as ProyectInterface } from '../interface/Proyect';
 import { AuthRequest } from '../middlewares/checkAuth';
 import Proyect from '../models/Proyects';
 import Task from '../models/Task';
+import User from '../models/User'
 
 const getProyectsByUser = async (req: AuthRequest, res = response) => {
     const { _id } = req.user;
@@ -61,7 +62,7 @@ const getProyectById = async (req: AuthRequest, res = response) => {
     try {
         const proyect = await Proyect.findById(id).populate('tasks', '-__v', Task, { proyect: id })
 
-    
+
         if (!proyect) {
             return res.status(404).json({ message: 'proyect not found' })
         }
@@ -132,9 +133,57 @@ const deleteProyect = async (req: AuthRequest, res = response) => {
         }
     }
 };
-
-const addColaborator = async (req = request, res = response) => {
+const searchColaborator = async (req = request, res = response) => {
+    const { email } = req.body;
     try {
+        const colaboratorExists = await User.findOne({ email }).select('-password -token -confirm -__v');
+        if (!colaboratorExists) {
+            return res.status(404).json({ message: 'Email not found' })
+        }
+        return res.status(200).json(colaboratorExists)
+
+    }
+    catch (error: unknown) {
+        if (error instanceof AxiosError) {
+            return res.status(500).json({ message: error.message })
+        }
+        else {
+            return res.status(500).json({ message: error })
+        }
+    }
+}
+
+const addColaborator = async (req : AuthRequest, res = response) => {
+    const { id } = req.params;
+    const { email  } = req.body;
+
+    try {
+        const proyectFound = await Proyect.findById(id);
+        if (!proyectFound) {
+            return res.status(404).json({ message: 'proyect not found' })
+        };
+        if(proyectFound.creator.toString() !== req.user._id.toString()){
+            return res.status(403).json({message : 'You are not the creator of this proyect'})
+        };
+        const colaboratorExists = await User.findOne({ email }).select('-password -token -confirm -__v');
+        if (!colaboratorExists) {
+            return res.status(404).json({ message: 'Email not found' })
+        };
+
+        // Check if user is the collaborator
+        if (colaboratorExists._id.toString() === req.user._id.toString()) {
+            return res.status(400).json({ message: 'You cannot add yourself as a collaborator' })
+        } 
+
+        // check if colaborator already exists in the proyect
+        if(proyectFound.colaborators?.some(colaborator => colaborator._id.toString() === colaboratorExists._id.toString())){
+            return res.status(400).json({ message: 'Colaborator already exists in the proyect' })
+        }
+
+        // Add colaborator to the proyect
+        proyectFound.colaborators?.push(colaboratorExists.id)
+        await proyectFound.save();
+        return res.status(200).json({message: 'Colaborator added to the proyect'})
 
 
     }
@@ -172,5 +221,6 @@ export {
     deleteProyect,
     addColaborator,
     deleteColaborator,
+    searchColaborator
 
 }

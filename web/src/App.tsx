@@ -12,7 +12,7 @@ import NewProyect from './pages/NewProyect';
 import ProyectsProvider from './context/ProyectsProvider';
 import ProyectCard from './components/ProyectCard';
 import UpdateProyect from './pages/UpdateProyect';
-
+import AddColaborator from './components/AddColaborator';
 function App() {
 
   return (
@@ -35,6 +35,7 @@ function App() {
             <Route path=':id' element={<ProyectCard />} />
             <Route path='update-proyect/:id' element={<UpdateProyect />} />
             <Route path='update-proyect/*' element={<Proyects />} />
+            <Route path='add-colaborator/:id' element={<AddColaborator />} />
           </Route>
         </Routes>
       </ProyectsProvider>

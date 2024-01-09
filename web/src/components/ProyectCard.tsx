@@ -55,6 +55,13 @@ const ProyectCard = () => {
                                     <TaskCard key={task?._id} task={task}/>
                                 ))
                             ): 'No tasks'}</h2>
+
+                            <div className="mt-4 flex justify-between">
+                                <p className="font-bold ">Add Colaborator</p>
+                                <Link
+                                    className="text-sky-600 hover:text-sky-800 font-bold" 
+                                    to={`/proyects/add-colaborator/${proyectDetail?._id}`}>new colaborator</Link>
+                            </div>
                         </div>
 
                     )

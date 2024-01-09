@@ -26,12 +26,12 @@ const TaskCard = ({ task }: TaskProps) => {
             <p>{formatDate(task.deadline!)}</p>
             <div className="flex gap-2  flex-1  mt-2 ">
                 {task.status ? (
-                    <button className="p-2 flex-1 rounded-md text-white bg-sky-600">complete</button>
+                    <button className="p-2  rounded-md text-white bg-sky-600">complete</button>
 
                 ) : (<button className="p-2  rounded-md text-white bg-blue-600">incomplete</button>)}
-                <button className="p-2 flex-1 rounded-md text-white bg-lime-600"
-                    onClick={() => handleUodateTask(task)}> edit</button>
-                <button className="p-2 flex-1 rounded-md text-white bg-red-600"
+                <button className="p-2  rounded-md text-white bg-lime-600"
+                    onClick={() => handleUodateTask(task)}>Update</button>
+                <button className="p-2  rounded-md text-white bg-red-600"
                     onClick={() => handleDelete(task._id!)}>delete</button>
 
             </div>

@@ -6,14 +6,17 @@ import {
     deleteProyect,
     addColaborator,
     deleteColaborator,
+    searchColaborator,
+    
 } from '../controllers/proyect.controller';
 import { AuthRequest, checkAuth } from '../middlewares/checkAuth';
 import { Router } from 'express';
 
 const router = Router();
 
-router.post('/add-colaborator/:id', <any>checkAuth, addColaborator);
-router.post('/delete-colaborator/:id', <any>checkAuth, deleteColaborator);
+router.post('/add-colaborator/:id', <any>checkAuth, <any>addColaborator);
+router.post('/delete-colaborator/:id/', <any>checkAuth, deleteColaborator);
+router.post('/search-colaborator', <any>checkAuth, searchColaborator);
 
 router.route('/')
     .get(<any>checkAuth, <any>getProyectsByUser)
